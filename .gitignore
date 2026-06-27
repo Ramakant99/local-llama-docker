@@ -1,0 +1,19 @@
+# Model files (large binaries)
+models/*.gguf
+
+# Environment config (may contain API keys)
+.env
+
+# OS generated
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Docker
+docker-compose.override.yml

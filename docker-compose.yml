@@ -1,0 +1,126 @@
+services:
+  # --- PLANNER SERVICE (CPU) ---
+  planner-cpu:
+    profiles: ["cpu"]
+    image: ghcr.io/ggml-org/llama.cpp:${IMAGE_TAG_CPU:-server}
+    container_name: llama-planner-cpu
+    ports:
+      - "${PLANNER_PORT:-8080}:8080"
+    volumes:
+      - ${MODELS_DIR:-./models}:/models
+      - ./webui:/webui
+    environment:
+      LLAMA_ARG_MODEL: /models/${PLANNER_MODEL}
+      LLAMA_ARG_THREADS: ${PLANNER_THREADS}
+      LLAMA_ARG_CTX_SIZE: ${PLANNER_CTX}
+      LLAMA_ARG_N_GPU_LAYERS: 0
+      LLAMA_ARG_EMBEDDINGS: ${EMBEDDINGS}
+      LLAMA_ARG_MLOCK: ${MLOCK}
+      LLAMA_ARG_HOST: 0.0.0.0
+      LLAMA_ARG_PORT: 8080
+      LLAMA_ARG_STATIC_PATH: /webui
+      LLAMA_API_KEY: ${API_KEY}
+    restart: unless-stopped
+
+  # --- PLANNER SERVICE (GPU) ---
+  planner-gpu:
+    profiles: ["gpu"]
+    image: ghcr.io/ggml-org/llama.cpp:${IMAGE_TAG_GPU:-server-cuda}
+    container_name: llama-planner-gpu
+    ports:
+      - "${PLANNER_PORT:-8080}:8080"
+    volumes:
+      - ${MODELS_DIR:-./models}:/models
+      - ./webui:/webui
+    environment:
+      LLAMA_ARG_MODEL: /models/${PLANNER_MODEL}
+      LLAMA_ARG_THREADS: ${PLANNER_THREADS}
+      LLAMA_ARG_CTX_SIZE: ${PLANNER_CTX}
+      LLAMA_ARG_N_GPU_LAYERS: ${PLANNER_GPU_LAYERS}
+      LLAMA_ARG_EMBEDDINGS: ${EMBEDDINGS}
+      LLAMA_ARG_MLOCK: ${MLOCK}
+      LLAMA_ARG_HOST: 0.0.0.0
+      LLAMA_ARG_PORT: 8080
+      LLAMA_ARG_STATIC_PATH: /webui
+      LLAMA_API_KEY: ${API_KEY}
+      # Advanced GPU Optimizations
+      LLAMA_ARG_FLASH_ATTN: ${FLASH_ATTN:-true}
+      LLAMA_ARG_CACHE_TYPE_K: ${KV_CACHE_QUANT:-q8_0}
+      LLAMA_ARG_CACHE_TYPE_V: ${KV_CACHE_QUANT:-q8_0}
+      LLAMA_ARG_BATCH: ${BATCH_SIZE:-2048}
+      LLAMA_ARG_UBATCH: ${BATCH_SIZE:-2048}
+      LLAMA_ARG_REASONING_BUDGET: ${REASONING_BUDGET:--1}
+      LLAMA_ARG_CHAT_TEMPLATE_KWARGS: '{"preserve_thinking": ${PRESERVE_THINKING:-true}}'
+      LLAMA_ARG_FIT: on
+      LLAMA_ARG_FIT_CTX: ${PLANNER_CTX:-4096}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    restart: unless-stopped
+
+  # --- AGENT SERVICE (CPU) ---
+  agent-cpu:
+    profiles: ["cpu"]
+    image: ghcr.io/ggml-org/llama.cpp:${IMAGE_TAG_CPU:-server}
+    container_name: llama-agent-cpu
+    ports:
+      - "${AGENT_PORT:-8081}:8080"
+    volumes:
+      - ${MODELS_DIR:-./models}:/models
+      - ./webui:/webui
+    environment:
+      LLAMA_ARG_MODEL: /models/${AGENT_MODEL}
+      LLAMA_ARG_THREADS: ${AGENT_THREADS}
+      LLAMA_ARG_CTX_SIZE: ${AGENT_CTX}
+      LLAMA_ARG_N_GPU_LAYERS: 0
+      LLAMA_ARG_EMBEDDINGS: ${EMBEDDINGS}
+      LLAMA_ARG_MLOCK: ${MLOCK}
+      LLAMA_ARG_HOST: 0.0.0.0
+      LLAMA_ARG_PORT: 8080
+      LLAMA_ARG_STATIC_PATH: /webui
+      LLAMA_API_KEY: ${API_KEY}
+    restart: unless-stopped
+
+  # --- AGENT SERVICE (GPU) ---
+  agent-gpu:
+    profiles: ["gpu"]
+    image: ghcr.io/ggml-org/llama.cpp:${IMAGE_TAG_GPU:-server-cuda}
+    container_name: llama-agent-gpu
+    ports:
+      - "${AGENT_PORT:-8081}:8080"
+    volumes:
+      - ${MODELS_DIR:-./models}:/models
+      - ./webui:/webui
+    environment:
+      LLAMA_ARG_MODEL: /models/${AGENT_MODEL}
+      LLAMA_ARG_THREADS: ${AGENT_THREADS}
+      LLAMA_ARG_CTX_SIZE: ${AGENT_CTX}
+      LLAMA_ARG_N_GPU_LAYERS: ${AGENT_GPU_LAYERS}
+      LLAMA_ARG_EMBEDDINGS: ${EMBEDDINGS}
+      LLAMA_ARG_MLOCK: ${MLOCK}
+      LLAMA_ARG_HOST: 0.0.0.0
+      LLAMA_ARG_PORT: 8080
+      LLAMA_ARG_STATIC_PATH: /webui
+      LLAMA_API_KEY: ${API_KEY}
+      # Advanced GPU Optimizations
+      LLAMA_ARG_FLASH_ATTN: ${FLASH_ATTN:-true}
+      LLAMA_ARG_CACHE_TYPE_K: ${KV_CACHE_QUANT:-q8_0}
+      LLAMA_ARG_CACHE_TYPE_V: ${KV_CACHE_QUANT:-q8_0}
+      LLAMA_ARG_BATCH: ${BATCH_SIZE:-2048}
+      LLAMA_ARG_UBATCH: ${BATCH_SIZE:-2048}
+      LLAMA_ARG_REASONING_BUDGET: ${REASONING_BUDGET:--1}
+      LLAMA_ARG_CHAT_TEMPLATE_KWARGS: '{"preserve_thinking": ${PRESERVE_THINKING:-true}}'
+      LLAMA_ARG_FIT: on
+      LLAMA_ARG_FIT_CTX: ${AGENT_CTX:-4096}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    restart: unless-stopped
