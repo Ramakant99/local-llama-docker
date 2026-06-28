@@ -6,7 +6,7 @@ param (
     [int]$Port = 8082,
 
     [Parameter(Mandatory=$false)]
-    [int]$GpuLayers = 41,
+    [int]$GpuLayers = 99,
 
     [Parameter(Mandatory=$false)]
     [int]$CtxSize = 128000,

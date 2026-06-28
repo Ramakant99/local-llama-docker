@@ -50,38 +50,26 @@ Open `.env` and set at minimum:
 
 > **Tip:** Place your `.gguf` model files in the `models/` directory before starting the server.
 
-### 2. Start the Server (Dual-Model Stack)
+### 2. Start a Model with `run_custom.ps1`
 
-Using the PowerShell helper script:
+The repository now provides a single, versatile script `run_custom.ps1` that can launch any GGUF model with custom settings. Use the script to start a model in CPU or GPU mode, specify ports, context size, reasoning budget, and optionally a vision projector.
 
 ```powershell
-# Start in CPU mode (default)
-.\run.ps1 -Mode cpu
+# Basic CPU run
+.\run_custom.ps1 -ModelFile "gemma/gemma-4-12b-it-Q4_K_M.gguf"
 
-# Start in GPU mode
-.\run.ps1 -Mode gpu
+# GPU run with custom context and budget
+.\run_custom.ps1 -ModelFile "gemma/gemma-4-12b-it-Q4_K_M.gguf" -GpuLayers 41 -CtxSize 32768 -ReasoningBudget 1024
 
-# Start only the Planner service
-.\run.ps1 -Service planner
-
-# Start only the Agent service
-.\run.ps1 -Service agent
-
-# Start with custom ports
-.\run.ps1 -Mode cpu -PlannerPort 9000 -AgentPort 9001
+# Vision model with projector
+.\run_custom.ps1 -ModelFile "phi/phi-3-gguf.q4_k_m.gguf" -MmProj "phi/mmproj-BF16.gguf"
 ```
 
-Or using Docker Compose directly:
+To stop the custom container:
 
-```bash
-# CPU mode (both services)
-docker compose --profile cpu up -d
-
-# Start only Planner (CPU)
-docker compose --profile cpu up -d planner-cpu
+```powershell
+.\run_custom.ps1 -Stop
 ```
-
-### 3. Access the Server
 
 | Service | Default URL |
 | :--- | :--- |
@@ -337,17 +325,9 @@ All configuration is done via the `.env` file. See [.env.example](./.env.example
 
 ## Operating Details
 
-### `run.ps1` — Selective Execution
+### `run_custom.ps1` — Unified Model Runner
 
-The `-Service` parameter controls what gets launched:
-
-| Value | Behavior |
-| :--- | :--- |
-| `both` *(default)* | Launches both the Planner and Agent. |
-| `planner` | Launches only the Planner service. |
-| `agent` | Launches only the Agent service. |
-
-The script dynamically manages environment variables and console output:
+The repository now uses a single script, `run_custom.ps1`, to launch any GGUF model with configurable options (GPU layers, context size, vision projector, etc.). This replaces the older `run.ps1` dual‑model helper and provides a more reusable, single‑service setup.
 - **Environment Management**: Sets `PLANNER_PORT` and `AGENT_PORT` before starting Docker Compose.
 - **Selective Logging**: Only the URLs for services actually started will be displayed.
 - **Cleanup**: Every run performs `down --remove-orphans` to ensure a clean state.
