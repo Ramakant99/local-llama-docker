@@ -1,5 +1,6 @@
 # Model files (large binaries)
 models/*.gguf
+models/**/*.gguf
 
 # Environment config (may contain API keys)
 .env
