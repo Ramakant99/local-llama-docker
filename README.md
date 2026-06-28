@@ -29,7 +29,7 @@ A flexible Docker Compose setup for running [llama.cpp](https://github.com/ggerg
 ### 1. Clone & Configure
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/LLamaCppDocker.git
+git clone https://github.com/Ramakant99/local-llama-docker.git
 cd LLamaCppDocker
 ```
 
@@ -98,13 +98,13 @@ This script provides a way to run a **standalone, highly-optimized** instance of
 
 ```powershell
 # Run any model with default optimized settings
-.\run_custom.ps1 -ModelFile "your-model.gguf"
+.\run_custom.ps1 -ModelFile "gemma/gemma-4-12b-it-Q4_K_M.gguf"
 
 # Run with a specific context size and reasoning budget
-.\run_custom.ps1 -ModelFile "your-model.gguf" -CtxSize 32768 -ReasoningBudget 1024
+.\run_custom.ps1 -ModelFile "gemma/gemma-4-12b-it-Q4_K_M.gguf" -CtxSize 32768 -ReasoningBudget 1024
 
 # Run a vision model with multimodal projector
-.\run_custom.ps1 -ModelFile "your-model.gguf" -MmProj "mmproj-BF16.gguf"
+.\run_custom.ps1 -ModelFile "phi/phi-3-gguf.q4_k_m.gguf" -MmProj "phi/mmproj-BF16.gguf"
 
 # Stop the custom container
 .\run_custom.ps1 -Stop
